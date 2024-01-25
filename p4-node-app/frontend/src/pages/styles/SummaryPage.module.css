@@ -1,0 +1,61 @@
+.valueMainContainer {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.valueSecondaryContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 100px;
+}
+
+.valueContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+}
+
+.valueContainer p {
+  font-size: 18px;
+}
+
+.valueSummaryContainer {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.valueButton {
+  position: absolute;
+  bottom: 160px;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 10px;
+  font-size: 23px;
+  border-radius: 5px;
+}
+
+.valueBackButton {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 35px;
+  cursor: pointer;
+}
+
+.valueContentWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 70px;
+}

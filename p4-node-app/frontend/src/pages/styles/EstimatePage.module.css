@@ -1,0 +1,61 @@
+.valueMainContainer {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.valueContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.valueContainer p {
+  font-size: 18px;
+}
+
+.valueResultContainer {
+  border: 1px solid #ddd;
+  background-color: #c9c6c673;
+  border-radius: 5px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.valueButtonContainer {
+  position: absolute;
+  bottom: 80px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.valueButton {
+  margin: 0;
+  padding: 10px;
+  font-size: 23px;
+  border-radius: 5px;
+}
+
+.valueBackButton {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 35px;
+  cursor: pointer;
+}
+
+.valueContentWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 140px;
+  padding-bottom: 50px;
+}

@@ -1,0 +1,120 @@
+:root {
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-image: linear-gradient(to bottom,
+    #4facfe, 
+    #49a9fd, 
+    #47a7fc, 
+    #45a4fb, 
+    #43a2fa, 
+    #419ff9, 
+    #3f9df8, 
+    #3d9af7, 
+    #3b98f6, 
+    #3996f5, 
+    #3794f4, 
+    #3591f3, 
+    #338ef2, 
+    #318cf1, 
+    #2f89f0, 
+    #2d87ef, 
+    #2b85ee, 
+    #2982ed, 
+    #277fe9, 
+    #257ce6, 
+    #2379e3, 
+    #2176e0, 
+    #1f73dd, 
+    #1d70da, 
+    #1b6dd7, 
+    #196ad4, 
+    #1767d1, 
+    #1564ce, 
+    #1361cb, 
+    #115ec8, 
+    #0f5bc5, 
+    #0d58c2, 
+    #0b55bf, 
+    #0952bc, 
+    #074fb9, 
+    #054cb6, 
+    #0349b3, 
+    #0146b0, 
+    #0043ad, 
+    #0040aa, 
+    #003da7, 
+    #003aa4, 
+    #0037a1, 
+    #00349e, 
+    #00319b, 
+    #002e98, 
+    #002b95, 
+    #002892, 
+    #00258f, 
+    #00228c, 
+    #001f89, 
+    #001c86, 
+    #001983, 
+    #001680, 
+    #00137d, 
+    #00107a, 
+    #000d77, 
+    #000a74, 
+    #000771, 
+    #00046e, 
+    #00016b, 
+    #000068, 
+    #000065, 
+    #000062, 
+    #00005f, 
+    #00005c, 
+    #000059, 
+    #000056, 
+    #000053, 
+    #000050, 
+    #00004d, 
+    #00004d,
+    #00004a, 
+    #00004a,
+    #000047,
+    #000047, 
+    #000044,
+    #000044, 
+    #000041,
+    #000041) !important;
+  margin: 0;
+  padding: 0;
+  min-height: 100vw;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+.footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  padding: 10px 0;
+}
+
+p {
+  font-size: 13px;
+  color: black;
+  line-height: 2px;
+}
