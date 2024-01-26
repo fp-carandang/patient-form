@@ -73,6 +73,30 @@ app.post('/create-project', projectValidationMiddleware(users), (req, res) => {
   });
 });
 
+app.patch('/projects-list/:projectName', (req, res) => {
+  const { user } = req.session;
+  const { projectName } = req.params;
+  const { newProjectName } = req.body;
+
+  if (!user) {
+    return res.status(401).json({ error: 'User not authenticated.' });
+  }
+
+  const project = user.projects.find((p) => p.projectName === projectName);
+
+  if (!project) {
+    return res.status(404).json({ error: 'Project not found.' });
+  }
+
+  project.projectName = newProjectName;
+
+   project.date = new Date();
+
+  res.status(200).json({
+    message: 'Project name updated successfully.'
+  });
+});
+
 app.get('/project-list', (req, res) => {
   const user = req.session.user;
 
@@ -117,6 +141,24 @@ app.get('/project-values/:projectName', (req, res) => {
   res.status(200).json({
     data: values,
   });
+});
+
+app.delete('/delete-project/:projectName', (req, res) => {
+  const { user } = req.session;
+  const projectName = req.params.projectName;
+
+  if (!user) {
+    return res.status(401).json({ error: 'Please log in to access project files' });
+  }
+
+  const projectIndex = user.projects.findIndex(p => p.projectName === projectName);
+
+  if (projectIndex !== -1) {
+    user.projects.splice(projectIndex, 1);
+    return res.status(200).json({ message: 'Project deleted successfully' });
+  } else {
+    return res.status(404).json({ error: 'Project not found' });
+  }
 });
 
 
