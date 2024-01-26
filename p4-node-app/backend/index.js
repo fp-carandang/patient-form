@@ -8,6 +8,9 @@ import ProjectFactory from '../backend/factories/ProjectFactory.js';
 import projectValidationMiddleware from '../backend/middlewares/projectValidationMiddleware.js';
 import ValueFactory from '../backend/factories/ValueFactory.js';
 import valueCheckerMiddleware from '../backend/middlewares/valueCheckerMiddleware.js';
+import UserRepository from '../backend/repositories/UserRepository.js';
+import ProjectRepository from '../backend/repositories/ProjectRepository.js';
+import ValueRepository from '../backend/repositories/ValueRepository.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,15 +24,18 @@ app.use(session({
   saveUninitialized: true,
 }));
 
-const users = [];
+const users = new UserRepository();
+const userRepository = new UserRepository();
 const userFactory = new UserFactory();
+const projectRepository = new ProjectRepository();
 const projectFactory = new ProjectFactory();
+const valueRepository = new ValueRepository();
 const valueFactory = new ValueFactory();
 
-app.post('/register', regValidationMiddleware(users), (req, res) => {
+app.post('/register', regValidationMiddleware(userRepository), (req, res) => {
   const { username, password, email } = req.body;
   const user = userFactory.create(username, password, email);
-  users.push(user);
+  userRepository.save(user);
 
   res.status(201).json({
     message: `${username} registered successfully.`
@@ -38,25 +44,21 @@ app.post('/register', regValidationMiddleware(users), (req, res) => {
 
 app.get('/register', (req, res) => {
   res.status(200).json({
-    data: users,
+    data: userRepository.getAllUsers(),
   });
 });
 
-app.post('/login', logValidationMiddleware(users), (req, res) => {
+app.post('/login', logValidationMiddleware(userRepository), (req, res) => {
   const { username } = req.body;
 
-  const user = users.find(user => user.username === username);
-
-  if (!user) {
-    return res.status(404).json({ error: 'User not found.' });
-  }
+  const user = userRepository.findByUsername(username);
 
   req.session.user = user;
 
   res.status(200).json({ message: `${username} logged in.` });
 });
 
-app.post('/create-project', projectValidationMiddleware(users), (req, res) => {
+app.post('/create-project', projectValidationMiddleware(projectRepository), (req, res) => {
   const { projectName } = req.body;
   const user = req.session.user;
 
@@ -67,16 +69,16 @@ app.post('/create-project', projectValidationMiddleware(users), (req, res) => {
   const project = projectFactory.create(projectName);
 
   user.projects.push(project);
+  projectRepository.save(project);
 
   res.status(201).json({
-    message: 'Project created successfully.'
+    message: 'Project created successfully.',
   });
 });
 
 app.patch('/projects-list/:projectName', (req, res) => {
   const { user } = req.session;
-  const { projectName } = req.params;
-  const { newProjectName } = req.body;
+  const projectName = req.params.projectName;
 
   if (!user) {
     return res.status(401).json({ error: 'User not authenticated.' });
@@ -88,12 +90,11 @@ app.patch('/projects-list/:projectName', (req, res) => {
     return res.status(404).json({ error: 'Project not found.' });
   }
 
-  project.projectName = newProjectName;
-
-   project.date = new Date();
+  project.projectName = req.body.newProjectName;
+  project.date = new Date();
 
   res.status(200).json({
-    message: 'Project name updated successfully.'
+    message: 'Project name updated successfully.',
   });
 });
 
@@ -104,12 +105,18 @@ app.get('/project-list', (req, res) => {
     return res.status(404).json({ error: 'User not found.' });
   }
 
-  res.status(200).json({
-    data: user.projects,
-  });
+  try {
+    const projects = user.projects;
+
+    res.status(200).json({
+      data: projects,
+    });
+  } catch (error) {
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
-app.post('/values-input', valueCheckerMiddleware, (req, res) => {
+app.post('/values-input/:projectName', valueCheckerMiddleware(valueRepository), (req, res) => {
   const { user } = req.session;
   const project = user ? user.projects.find(p => p.projectName === req.body.projectName) : undefined;
 
@@ -136,7 +143,7 @@ app.get('/project-values/:projectName', (req, res) => {
     return res.status(404).json({ error: 'Project not found.' });
   }
 
-  const values = project.values;
+  const values = valueRepository.getAllValues(project);
 
   res.status(200).json({
     data: values,
@@ -151,13 +158,20 @@ app.delete('/delete-project/:projectName', (req, res) => {
     return res.status(401).json({ error: 'Please log in to access project files' });
   }
 
-  const projectIndex = user.projects.findIndex(p => p.projectName === projectName);
+  try {
+    const project = user.projects.find((p) => p.projectName === projectName);
 
-  if (projectIndex !== -1) {
-    user.projects.splice(projectIndex, 1);
-    return res.status(200).json({ message: 'Project deleted successfully' });
-  } else {
-    return res.status(404).json({ error: 'Project not found' });
+    if (project) {
+      projectRepository.delete(project);
+      
+      user.projects = user.projects.filter((p) => p.projectName !== projectName);
+      
+      return res.status(200).json({ message: 'Project deleted successfully' });
+    } else {
+      return res.status(404).json({ error: 'Project not found' });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: error.message || 'Internal Server Error' });
   }
 });
 

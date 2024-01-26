@@ -1,4 +1,4 @@
-function projectValidationMiddleware(users) {
+function projectValidationMiddleware(projectRepository) {
   return function (req, res, next) {
     const { projectName } = req.body;
 
@@ -12,17 +12,21 @@ function projectValidationMiddleware(users) {
       return res.status(404).json({ error: 'User not found.' });
     }
 
-    const duplicateProjectName = user.projects.some(
-      (project) => project.projectName.toLowerCase() === projectName.toLowerCase()
-    );
+    try {
+      const duplicateProjectName = projectRepository
+        .getAllProjects()
+        .some((project) => project.projectName.toLowerCase() === projectName.toLowerCase());
 
-    if (duplicateProjectName) {
-      return res.status(400).json({
-        message: 'A project with the same name already exists for this user',
-      });
+      if (duplicateProjectName) {
+        return res.status(400).json({
+          message: 'A project with the same name already exists for this user',
+        });
+      }
+
+      next();
+    } catch (error) {
+      return res.status(500).json({ error: 'Internal Server Error' });
     }
-
-    next();
   };
 }
 
