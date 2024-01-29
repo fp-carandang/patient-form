@@ -1,78 +1,62 @@
-import ValueRepository from "../repositories/ValueRepository.js";
+import mongoose from 'mongoose';
 
-function valueCheckerMiddleware(valueRepository) {
-  return async function (req, res, next) {
-    const {
-      selectedStrucType, selectedShape, length, width, height, base, depth, radius,
-      selectedMixClass, selectedMMixClass, selectedPlasteredFaces, volume, cement,
-      gravel, sand, chb, area, mortarCement, plasterCement, mortarSand, plasterSand
-    } = req.body;
+function valueCheckerMiddleware(req, res, next) {
+  const { user } = req.session;
+  const { projectName } = req.params;
 
-    const { user } = req.session;
-    const { projectName } = req.params;
+  try {
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
 
-    const project = user ? user.projects.find(p => p.projectName === projectName) : undefined;
+    const project = user.projects.find(p => p.projectName === projectName);
 
     if (!project) {
       return res.status(404).json({ error: 'Project not found.' });
     }
 
-    let existingValue = project.values.find(value => (
-      value.selectedStrucType === selectedStrucType ||
-      value.selectedShape === selectedShape ||
-      value.length === length ||
-      value.width === width ||
-      value.height === height ||
-      value.base === base ||
-      value.depth === depth ||
-      value.radius === radius ||
-      value.selectedMixClass === selectedMixClass ||
-      value.selectedMMixClass === selectedMMixClass ||
-      value.selectedPlasteredFaces === selectedPlasteredFaces ||
-      value.volume === volume ||
-      value.cement === cement ||
-      value.gravel === gravel ||
-      value.sand === sand ||
-      value.chb === chb ||
-      value.area === area ||
-      value.mortarCement === mortarCement ||
-      value.plasterCement === plasterCement ||
-      value.mortarSand === mortarSand ||
-      value.plasterSand === plasterSand
-    ));
+    const ValueModel = mongoose.model('Value');
+    const values = Array.isArray(req.body) ? req.body : [req.body];
 
-    if (existingValue) {
-      existingValue.selectedStrucType = selectedStrucType;
-      existingValue.selectedShape = selectedShape;
-      existingValue.length = length;
-      existingValue.width = width;
-      existingValue.height = height;
-      existingValue.base = base;
-      existingValue.depth = depth;
-      existingValue.radius = radius;
-      existingValue.selectedMixClass = selectedMixClass;
-      existingValue.selectedMMixClass = selectedMMixClass;
-      existingValue.selectedPlasteredFaces = selectedPlasteredFaces;
-      existingValue.volume = volume;
-      existingValue.cement = cement;
-      existingValue.gravel = gravel;
-      existingValue.sand = sand;
-      existingValue.chb = chb;
-      existingValue.area = area;
-      existingValue.mortarCement = mortarCement;
-      existingValue.plasterCement = plasterCement;
-      existingValue.mortarSand = mortarSand;
-      existingValue.plasterSand = plasterSand;
-    } else {
-      const value = {
-        selectedStrucType, selectedShape, length, width, height, base, depth, radius,
-        selectedMixClass, selectedMMixClass, selectedPlasteredFaces, volume, cement,
-        gravel, sand, chb, area, mortarCement, plasterCement, mortarSand, plasterSand
-      };
-      project.values.push(value);
+    for (const currentReqValue of values) {
+      if (currentReqValue._id && !mongoose.Types.ObjectId.isValid(currentReqValue._id)) {
+        return res.status(400).json({ error: 'Invalid _id format in values array.' });
+      }
     }
 
+    for (const currentReqValue of values) {
+      if (currentReqValue._id) {
+        const existingValueIndex = project.values.findIndex(value =>
+          value._id.equals(currentReqValue._id)
+        );
+
+        if (existingValueIndex !== -1) {
+          const updatedValue = ValueModel.findOneAndUpdate(
+            { _id: currentReqValue._id },
+            {
+              volume: currentReqValue.volume,
+              cement: currentReqValue.cement,
+              gravel: currentReqValue.gravel,
+              sand: currentReqValue.sand,
+              chb: currentReqValue.chb,
+              area: currentReqValue.area,
+              mortarCement: currentReqValue.mortarCement,
+              plasterCement: currentReqValue.plasterCement,
+              mortarSand: currentReqValue.mortarSand,
+              plasterSand: currentReqValue.plasterSand,
+            },
+            { new: true }
+          );
+          project.values[existingValueIndex] = updatedValue;
+        }
+      }
+    }
+
+    project.save();
     next();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 

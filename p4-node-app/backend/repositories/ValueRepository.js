@@ -1,30 +1,40 @@
+import mongoose from 'mongoose';
+
 class ValueRepository {
-  constructor() {
-    this.values = [];
+  async save(project, value) {
+    try {
+      const savedValue = await value.save();
+
+      project.values.push(savedValue._id);
+      await project.save();
+
+      return savedValue;
+    } catch (error) {
+      throw new Error(`Error saving value: ${error.message}`);
+    }
   }
 
-  save(project, value) {
-    project.values.push(value);
-    return value;
-  }
+  async update(existingValue, updatedValue) {
+    try {
 
-  update(existingValue, updatedValue) {
-    Object.assign(existingValue, updatedValue);
+      const updated = await Value.updateOne({ _id: existingValue._id }, updatedValue);
+      return updated;
+    } catch (error) {
+      throw new Error(`Error updating value: ${error.message}`);
+    }
   }
 
   getAllValues(project) {
     return project.values;
   }
 
-  findByAttributes(project, attributes) {
-    return project.values.find((value) => {
-      for (const key in attributes) {
-        if (attributes[key] !== value[key]) {
-          return false;
-        }
-      }
-      return true;
-    });
+  async findByAttributes(attributes) {
+    try {
+      const foundValues = await Value.find(attributes);
+      return foundValues;
+    } catch (error) {
+      throw new Error(`Error finding values: ${error.message}`);
+    }
   }
 }
 

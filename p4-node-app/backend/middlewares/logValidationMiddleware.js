@@ -1,21 +1,32 @@
+import argon2 from 'argon2';
+
 function logValidationMiddleware(userRepository) {
-  return function(req, res, next) {
-    const { username, password } = req.body;
-
-    if (!username || !password) {
-      return res.status(400).json({ error: 'Username and password are required.' });
-    }
-
+  return async function (req, res, next) {
     try {
-      const existingUser = userRepository.findByUsername(username);
+      const { username, password } = req.body;
 
-      if (existingUser.password !== password) {
-        return res.status(401).json({ error: 'Password does not match registered user.' });
+      const existingUser = await userRepository.findByUsername(username);
+
+      if (!existingUser) {
+        return res.status(401).json({ error: 'Invalid username or password.' });
       }
 
+      try {
+        const passwordMatch = await argon2.verify(existingUser.password, password);
+
+        if (!passwordMatch) {
+          return res.status(401).json({ error: 'Invalid username or password.' });
+        }
+      } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
+
+      req.session.user = existingUser;
       next();
     } catch (error) {
-      return res.status(404).json({ error: 'User not found.' });
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   };
 }

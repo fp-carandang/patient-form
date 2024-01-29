@@ -1,27 +1,27 @@
+import User from '../models/User.js';
+
 class UserRepository {
-  constructor() {
-    this.users = [];
-  }
-
-  save(user) {
-    this.users.push(user);
+  async save(user) {
+    await user.save();
     return user;
   }
 
-  getAllUsers() {
-    return this.users;
+  async getAllUsers() {
+    return await User.find({});
   }
 
-  findByUsername(username) {
-    const user = this.users.find(function (user) {
-      return user.username === String(username);
-    });
-
-    if (!user) {
-      throw new Error('User not found.');
+  async findByUsername(username) {
+    try {
+      const user = await User.findOne({ username });
+      return user || null;
+    } catch (error) {
+      console.error('Error in findByUsername:', error);
+      throw new Error('An error occurred while searching for the user.');
     }
+  }
 
-    return user;
+  async findById(userId) {
+    return await User.findById(userId);
   }
 }
 

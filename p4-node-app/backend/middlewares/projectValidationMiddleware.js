@@ -1,6 +1,7 @@
 function projectValidationMiddleware(projectRepository) {
-  return function (req, res, next) {
-    const { projectName } = req.body;
+  return async function (req, res, next) {
+    const { projectName } = req.params;
+    const { values } = req.body;
 
     if (!projectName) {
       return res.status(400).json({ error: 'Please name your current project.' });
@@ -13,19 +14,18 @@ function projectValidationMiddleware(projectRepository) {
     }
 
     try {
-      const duplicateProjectName = projectRepository
-        .getAllProjects()
-        .some((project) => project.projectName.toLowerCase() === projectName.toLowerCase());
+      const existingProject = await projectRepository.findByProjectName(projectName);
 
-      if (duplicateProjectName) {
-        return res.status(400).json({
-          message: 'A project with the same name already exists for this user',
-        });
+      if (existingProject) {
+        existingProject.values = values;
+        const updatedProject = await projectRepository.save(existingProject);
+        return res.status(200).json({ message: 'Project updated successfully.', data: updatedProject });
       }
 
       next();
     } catch (error) {
-      return res.status(500).json({ error: 'Internal Server Error' });
+      console.error(error);
+      res.status(500).json({ error: `An error occurred: ${error.message}` });
     }
   };
 }
