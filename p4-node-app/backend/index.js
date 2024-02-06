@@ -17,6 +17,7 @@ import Project from './models/Project.js';
 import Value from './models/Value.js';
 import mongoose from 'mongoose';
 import MongoDBStore from 'connect-mongodb-session';
+import cors from 'cors';
 
 const MongoDBStoreSession = MongoDBStore(session);
 
@@ -25,6 +26,8 @@ const PORT = process.env.PORT || 3000;
 const { connect } = mongoose;
 
 await connect('mongodb://localhost:27017/backend');
+
+app.use(cors());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -41,12 +44,20 @@ app.use(session({
   store: store,
 }));
 
+app.use((req, res, next) => {
+  if (req.session && req.session.user) {
+    res.locals.currentUser = req.session.user;
+  }
+  next();
+});
+
 const userRepository = new UserRepository();
 const userFactory = new UserFactory();
 const projectRepository = new ProjectRepository();
 const projectFactory = new ProjectFactory();
 const valueRepository = new ValueRepository();
 const valueFactory = new ValueFactory();
+
 
 app.use((req, res, next) => {
   req.userRepository = userRepository;
@@ -118,14 +129,15 @@ app.post('/logout', (req, res) => {
   }
 });
 
-app.post('/save-project/:projectName', async (req, res) => {
+app.post('/save-project', async (req, res) => {
   try {
     const { user } = req.session;
-    const { projectName } = req.params;
 
     if (!user) {
       return res.status(404).json({ error: 'Please login to use this feature.' });
     }
+
+    const { projectName } = req.body;
 
     let project = await projectRepository.findByProjectName(projectName);
 

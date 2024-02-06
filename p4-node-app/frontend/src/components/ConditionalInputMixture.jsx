@@ -25,7 +25,7 @@ function ConditionalInputMixture({ selectedStrucType }) {
   };
 
   return (
-    <div className={styles.valueContainer}>
+    <div className={styles.valueMixContainer}>
       {selectedStrucType === 'concreteSlab' && (
         <div className={styles.valueMainContainer}>
           <h4>Concrete Mix Class:

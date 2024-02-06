@@ -10,10 +10,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 50px;
 }
 
 .valueContainer p {
-  font-size: 18px;
+  font-size: 15px;
 }
 
 .valueResultContainer {
@@ -21,34 +22,6 @@
   background-color: #c9c6c673;
   border-radius: 5px;
   padding: 20px;
-  margin-top: 20px;
-}
-
-.valueButtonContainer {
-  position: absolute;
-  bottom: 80px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-}
-
-.valueButton {
-  margin: 0;
-  padding: 10px;
-  font-size: 23px;
-  border-radius: 5px;
-}
-
-.valueBackButton {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 1000;
-  padding: 10px;
-  border-radius: 5px;
-  font-size: 35px;
-  cursor: pointer;
 }
 
 .valueContentWrapper {
@@ -56,6 +29,5 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-top: 140px;
-  padding-bottom: 50px;
+  margin-top: 20px;
 }

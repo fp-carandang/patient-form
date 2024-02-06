@@ -12,6 +12,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
+      'antd/dist/antd.css': 'antd/es/style/index.css',
     },
   },
 });

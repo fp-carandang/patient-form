@@ -1,8 +1,10 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ConditionalInputShape from '@/components/ConditionalInputShape';
 import ConditionalInputMixture from '@/components/ConditionalInputMixture';
 import styles from './styles/InputPage.module.css';
 import { useSelectionContext } from '@/components/SelectionContext';
+import { Button } from 'antd';
+import toast, { Toaster } from 'react-hot-toast';
 
 function InputPage() {
   const {
@@ -12,7 +14,19 @@ function InputPage() {
     setSelectedShape,
     selectedUnit,
     setSelectedUnit,
+    selectedMixClass,
+    selectedMMixClass,
+    selectedPlasteredFaces,
+    length,
+    width,
+    height,
+    base,
+    depth,
+    diameter,
+    radius,
   } = useSelectionContext();
+
+  const navigate = useNavigate();
 
   const handleShapeChange = (event) => {
     setSelectedShape(event.target.value);
@@ -26,12 +40,75 @@ function InputPage() {
     setSelectedUnit(event.target.value);
   };
 
+  const handleConfirm = () => {
+    let errorMessage = '';
+  
+    switch (selectedStrucType) {
+      case 'concreteSlab':
+        switch (selectedShape) {
+          case 'Rectangular':
+            if (!selectedUnit || !length || !width || !height || !selectedMixClass) {
+              errorMessage = 'Please fill in all fields.';
+            }
+            break;
+          case 'Triangular':
+            if (!selectedUnit || !base || !height || !selectedMixClass) {
+              errorMessage = 'Please fill in all fields.';
+            }
+            break;
+          case 'Circular':
+            if (!selectedUnit || !diameter || !height || !selectedMixClass) {
+              errorMessage = 'Please fill in all fields.';
+            }
+            break;
+          default:
+            errorMessage = 'Please select a valid shape.';
+            break;
+        }
+        break;
+      case 'chbWall':
+        switch (selectedShape) {
+          case 'Rectangular':
+            if (!selectedUnit || !length || !width || !height || !selectedMMixClass || !selectedPlasteredFaces) {
+              errorMessage = 'Please fill in all fields.';
+            }
+            break;
+          case 'Triangular':
+            if (!selectedUnit || !base || !height || !selectedMMixClass || !selectedPlasteredFaces) {
+              errorMessage = 'Please fill in all fields.';
+            }
+            break;
+          case 'Circular':
+            if (!selectedUnit || !diameter || !height || !selectedMMixClass || !selectedPlasteredFaces) {
+              errorMessage = 'Please fill in all fields.';
+            }
+            break;
+          default:
+            errorMessage = 'Please select a valid shape.';
+            break;
+        }
+        break;
+      default:
+        errorMessage = 'Please select a valid structure type.';
+        break;
+    }
+  
+    if (errorMessage) {
+      toast.error(errorMessage);
+      return;
+    }
+  
+    navigate('/summary');
+  };
+  
+
   return (
-    <div className={styles.valueContentWrapper}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px', paddingBottom: '20px' }}>
+      <Toaster position="top-center" />
+      <Link to='/shape'>
+        <Button type='primary' style={{ position: 'fixed', left: '10%' }}>←</Button>
+      </Link>
       <div className={styles.valueMainContainer}>
-        <Link to='/shape'>
-          <button className={styles.valueBackButton} type='button'>←</button>
-        </Link>
         <div className={styles.valueContainer}>
           <select
             className={styles.valueSelectBox}
@@ -68,11 +145,7 @@ function InputPage() {
         <ConditionalInputShape selectedShape={selectedShape} />
         <h3>Input Mixture Type(s):</h3>
         <ConditionalInputMixture selectedStrucType={selectedStrucType} />
-        <Link to='/summary'>
-          <button className={styles.valueButton} type='button'>
-            Confirm
-          </button>
-        </Link>
+        <Button type='primary' style={{ position: 'fixed', left: '38%', bottom: '80px' }} onClick={handleConfirm}>Confirm</Button>
       </div>
     </div>
   );

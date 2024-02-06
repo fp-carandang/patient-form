@@ -20,7 +20,6 @@ function regValidationMiddleware(userRepository) {
       const users = await userRepository.getAllUsers();
 
       if (!users || !Array.isArray(users)) {
-        // Handle the case where users is undefined or not an array
         console.error('Invalid users array:', users);
         return res.status(500).json({ error: 'Internal Server Error' });
       }

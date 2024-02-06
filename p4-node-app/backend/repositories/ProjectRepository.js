@@ -46,7 +46,6 @@ class ProjectRepository {
   
       console.log('Project updated in the database:', updatedProject);
   
-      // Assuming that the user is associated with the project through a reference
       const user = await User.findOne({ projects: project._id });
   
       if (!user) {

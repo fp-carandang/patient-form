@@ -21,9 +21,14 @@ function logValidationMiddleware(userRepository) {
         console.error(error);
         return res.status(500).json({ error: 'Internal Server Error' });
       }
+      
+      req.session.user = {
+        _id: existingUser._id,
+        username: existingUser.username,
+        email: existingUser.email,
+      };
 
-      req.session.user = existingUser;
-      next();
+      res.status(200).json({ message: `${username} logged in.` });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Internal Server Error' });
