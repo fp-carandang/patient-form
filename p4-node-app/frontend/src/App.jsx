@@ -15,7 +15,7 @@ function App() {
           <RouterProvider router={router} />
           <Toaster position="top-center" />
           <div className='footer'>
-            <p>Quickstimate ver 1.0.0</p>
+            <p>Quickstimate ver 1.5.0</p>
             <p>© fpmc.2023</p>
           </div>
         </div>

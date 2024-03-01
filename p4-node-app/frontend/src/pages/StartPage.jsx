@@ -22,7 +22,7 @@ function StartPage() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '100px', }}>
       <Toaster position="top-center" />
       <div style={{ width: '100%' }}>
         <Image style={{ height: '80px', width: '100%' }} src='./images/quick-ad.gif' alt="Quick Ad" />
