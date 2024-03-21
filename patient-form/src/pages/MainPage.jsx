@@ -54,7 +54,7 @@ const PatientForm = () => {
       const requiredFields = ['name', 'birthday', 'address', 'email', 'phone', 'height', 'weight'];
       const invalidFields = requiredFields.filter(field => {
         if (field === 'alcohol' || field === 'smoke') {
-          return (formData[`${field}Yes`] || formData[`${field}No`]) && !formData[`${field}Frequency`];
+          return (formData[`${field}Yes`] && !formData[`${field}Frequency`]) || formData[`${field}No`];
         } else {
           return !formData[field];
         }
@@ -78,6 +78,10 @@ const PatientForm = () => {
 
     console.log(formData);
     setPhase(phase + 1);
+  };
+
+  const handleGoBack = () => {
+    window.location.href = window.location.href;
   };
 
   return (
@@ -274,10 +278,10 @@ const PatientForm = () => {
                 <li><strong>Family Members:</strong></li>
                 {formData.familyMembers.map((member, index) => (
                   <ul key={index}>
-                   <li><strong>Family Member {index + 1}:</strong></li> 
-                   <li><strong>Name:</strong> {member.name}</li> 
-                   <li><strong>Age:</strong> {member.age}</li> 
-                   <li><strong>Relationship:</strong> {member.relationship}</li>
+                    <li><strong>Family Member {index + 1}:</strong></li>
+                    <li><strong>Name:</strong> {member.name}</li>
+                    <li><strong>Age:</strong> {member.age}</li>
+                    <li><strong>Relationship:</strong> {member.relationship}</li>
                   </ul>
                 ))}
               </ul>
@@ -288,6 +292,7 @@ const PatientForm = () => {
       {phase === 5 && (
         <div>
           <h2>Your form has been submitted. Thank you!</h2>
+          <Button onClick={handleGoBack}>Go Back</Button>
         </div>
       )}
       {phase < 4 && (
